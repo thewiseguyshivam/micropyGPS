@@ -38,11 +38,10 @@ class MicropyGPS(object):
                 'June', 'July', 'August', 'September', 'October',
                 'November', 'December')
 
-    def __init__(self, local_offset_hr=0, local_offset_min=0, location_formatting='ddm'):
+    def __init__(self, local_offset=0, location_formatting='ddm'):
         """
         Setup GPS Object Status Flags, Internal Data Registers, etc
-            local_offset_hr (int): Timzone Difference in hours to UTC
-            local_offset_min (int): Timzone Difference in minutes to UTC
+            local_offset (int): Timzone Difference to UTC
             location_formatting (str): Style For Presenting Longitude/Latitude:
                                        Decimal Degree Minute (ddm) - 40° 26.767′ N
                                        Degrees Minutes Seconds (dms) - 40° 26′ 46″ N
@@ -75,8 +74,7 @@ class MicropyGPS(object):
         # Time
         self.timestamp = [0, 0, 0.0]
         self.date = [0, 0, 0]
-        self.local_offset_hr = local_offset_hr
-        self.local_offset_min = local_offset_min
+        self.local_offset = local_offset
 
         # Position/Motion
         self._latitude = [0, 0.0, 'N']
@@ -184,8 +182,8 @@ class MicropyGPS(object):
             utc_string = self.gps_segments[1]
 
             if utc_string:  # Possible timestamp found
-                hours = (int(utc_string[0:2]) + self.local_offset_hr) % 24
-                minutes = (int(utc_string[2:4]) + self.local_offset_min)
+                hours = (int(utc_string[0:2]) + self.local_offset) % 24
+                minutes = int(utc_string[2:4])
                 seconds = float(utc_string[4:])
                 self.timestamp = [hours, minutes, seconds]
             else:  # No Time stamp yet
@@ -282,8 +280,8 @@ class MicropyGPS(object):
             utc_string = self.gps_segments[5]
 
             if utc_string:  # Possible timestamp found
-                hours = (int(utc_string[0:2]) + self.local_offset_hr) % 24
-                minutes = (int(utc_string[2:4]) + self.local_offset_min)
+                hours = (int(utc_string[0:2]) + self.local_offset) % 24
+                minutes = int(utc_string[2:4])
                 seconds = float(utc_string[4:])
                 self.timestamp = [hours, minutes, seconds]
             else:  # No Time stamp yet
@@ -355,8 +353,8 @@ class MicropyGPS(object):
 
             # Skip timestamp if receiver doesn't have on yet
             if utc_string:
-                hours = (int(utc_string[0:2]) + self.local_offset_hr) % 24
-                minutes = (int(utc_string[2:4]) + self.local_offset_min)
+                hours = (int(utc_string[0:2]) + self.local_offset) % 24
+                minutes = int(utc_string[2:4])
                 seconds = float(utc_string[4:])
             else:
                 hours = 0
